@@ -19,6 +19,8 @@ package com.example.compose.rally
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.absolutePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
@@ -65,48 +67,58 @@ fun RallyApp() {
                 )
             }
         ) { innerPadding ->
-            NavHost(
-                navController = navController,
-                startDestination = Overview.name,
-                modifier = Modifier.padding(innerPadding)
-            ) {
-                composable(Overview.name) {
-                    OverviewBody(
-                        onClickSeeAllAccounts = { navController.navigate(Accounts.name) },
-                        onClickSeeAllBills = { navController.navigate(Bills.name) },
-                        onAccountClick = { name -> navigateToSingleAccount(navController, name) }
-                    )
-                }
-                composable(Accounts.name) {
-                    AccountsBody(accounts = UserData.accounts) { name ->
-                        navigateToSingleAccount(navController = navController, accountName = name)
-                    }
-                }
-                composable(Bills.name) {
-                    BillsBody(bills = UserData.bills)
-                }
+            RallyNavHost(navController, Modifier.padding(innerPadding))
+        }
+    }
+}
 
-                val accountsName = Accounts.name
-
-                composable(
-                    route = "$accountsName/{name}",
-                    arguments = listOf(navArgument("name") {
-                        // Make argument type safe
-                        type = NavType.StringType
-                    },),
-                    deepLinks = listOf(
-                        navDeepLink {
-                            uriPattern = "rally://$accountsName/{name}"
-                        }
-                    )
-                ) { entry -> // Look up "name" in NavBackstack's arguments
-                    val accountName = entry.arguments?.getString("name")
-                    // Find first name match in UserData
-                    val account = UserData.getAccount(accountName)
-                    // Pass account to SingleAccountBody
-                    SingleAccountBody(account = account)
-                }
+@Composable
+private fun RallyNavHost(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
+    NavHost(
+        navController = navController,
+        startDestination = Overview.name,
+        modifier = modifier
+    ) {
+        composable(Overview.name) {
+            OverviewBody(
+                onClickSeeAllAccounts = { navController.navigate(Accounts.name) },
+                onClickSeeAllBills = { navController.navigate(Bills.name) },
+                onAccountClick = { name -> navigateToSingleAccount(navController, name) }
+            )
+        }
+        composable(Accounts.name) {
+            AccountsBody(accounts = UserData.accounts) { name ->
+                navigateToSingleAccount(navController = navController, accountName = name)
             }
+        }
+        composable(Bills.name) {
+            BillsBody(bills = UserData.bills)
+        }
+
+        val accountsName = Accounts.name
+
+        composable(
+            route = "$accountsName/{name}",
+            arguments = listOf(
+                navArgument("name") {
+                    // Make argument type safe
+                    type = NavType.StringType
+                },
+            ),
+            deepLinks = listOf(
+                navDeepLink {
+                    uriPattern = "rally://$accountsName/{name}"
+                }
+            )
+        ) { entry -> // Look up "name" in NavBackstack's arguments
+            val accountName = entry.arguments?.getString("name")
+            // Find first name match in UserData
+            val account = UserData.getAccount(accountName)
+            // Pass account to SingleAccountBody
+            SingleAccountBody(account = account)
         }
     }
 }
