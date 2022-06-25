@@ -23,6 +23,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.navigation.NavController
+import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -74,10 +76,14 @@ fun RallyApp() {
                 composable(Overview.name) {
                     OverviewBody(
                         onClickSeeAllAccounts = { navController.navigate(Accounts.name) },
-                        onClickSeeAllBills = { navController.navigate(Bills.name) })
+                        onClickSeeAllBills = { navController.navigate(Bills.name) },
+                        onAccountClick = { name -> navigateToSingleAccount(navController, name) }
+                    )
                 }
                 composable(Accounts.name) {
-                    AccountsBody(accounts = UserData.accounts)
+                    AccountsBody(accounts = UserData.accounts) { name ->
+                        navigateToSingleAccount(navController = navController, accountName = name)
+                    }
                 }
                 composable(Bills.name) {
                     BillsBody(bills = UserData.bills)
@@ -86,7 +92,7 @@ fun RallyApp() {
                 val accountsName = Accounts.name
 
                 composable(
-                    route = "$accountsName/{name}", 
+                    route = "$accountsName/{name}",
                     arguments = listOf(navArgument("name") {
                         // Make argument type safe
                         type = NavType.StringType
@@ -101,4 +107,11 @@ fun RallyApp() {
             }
         }
     }
+}
+
+private fun navigateToSingleAccount(
+    navController: NavHostController,
+    accountName: String
+) {
+    navController.navigate("${Accounts.name}/$accountName")
 }
