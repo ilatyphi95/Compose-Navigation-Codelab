@@ -64,7 +64,7 @@ fun RallyApp() {
             topBar = {
                 RallyTabRow(
                     allScreens = allScreens,
-                    onTabSelected = { screen -> navController.navigate(screen.name)},
+                    onTabSelected = { screen -> navController.navigate(screen.name) },
                     currentScreen = RallyScreen.fromRoute(backStackEntry.value?.destination?.route)
                 )
             }
@@ -72,9 +72,12 @@ fun RallyApp() {
             NavHost(
                 navController = navController,
                 startDestination = Overview.name,
-                modifier = Modifier.padding(innerPadding)) {
+                modifier = Modifier.padding(innerPadding)
+            ) {
                 composable(Overview.name) {
-                    OverviewBody()
+                    OverviewBody(
+                        onClickSeeAllAccounts = { navController.navigate(Accounts.name) },
+                        onClickSeeAllBills = { navController.navigate(Bills.name) })
                 }
                 composable(Accounts.name) {
                     AccountsBody(accounts = UserData.accounts)
