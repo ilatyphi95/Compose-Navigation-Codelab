@@ -33,7 +33,12 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.example.compose.rally.RallyScreen.*
+import com.example.compose.rally.data.UserData
+import com.example.compose.rally.ui.accounts.AccountsBody
+import com.example.compose.rally.ui.bills.BillsBody
 import com.example.compose.rally.ui.components.RallyTabRow
+import com.example.compose.rally.ui.overview.OverviewBody
 import com.example.compose.rally.ui.theme.RallyTheme
 
 /**
@@ -52,7 +57,7 @@ class RallyActivity : ComponentActivity() {
 @Composable
 fun RallyApp() {
     RallyTheme {
-        val allScreens = RallyScreen.values().toList()
+        val allScreens = values().toList()
         val navController = rememberNavController()
         val backStackEntry = navController.currentBackStackEntryAsState()
         Scaffold(
@@ -66,16 +71,16 @@ fun RallyApp() {
         ) { innerPadding ->
             NavHost(
                 navController = navController,
-                startDestination = RallyScreen.Overview.name,
+                startDestination = Overview.name,
                 modifier = Modifier.padding(innerPadding)) {
-                composable(RallyScreen.Overview.name) {
-                    Text(text = RallyScreen.Overview.name)
+                composable(Overview.name) {
+                    OverviewBody()
                 }
-                composable(RallyScreen.Accounts.name) {
-                    Text(text = RallyScreen.Accounts.name)
+                composable(Accounts.name) {
+                    AccountsBody(accounts = UserData.accounts)
                 }
-                composable(RallyScreen.Bills.name) {
-                    Text(text = RallyScreen.Bills.name)
+                composable(Bills.name) {
+                    BillsBody(bills = UserData.bills)
                 }
             }
         }
